@@ -1,0 +1,16 @@
+{% extends 'cinema/base.html' %}
+{% block title %}Отзывы{% endblock %}
+{% block content %}
+<h2>Отзывы</h2>
+<ul class="list-group">
+    {% for review in reviews %}
+    <li class="list-group-item">
+        <strong>{{ review.user.username }}</strong> — Оценка: {{ review.rating }}<br>
+        <small>{{ review.created_at|date:"d/m/Y" }}</small>
+        <p>{{ review.text }}</p>
+    </li>
+    {% empty %}
+    <li class="list-group-item">Пока нет отзывов.</li>
+    {% endfor %}
+</ul>
+{% endblock %} 

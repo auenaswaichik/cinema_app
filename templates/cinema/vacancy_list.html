@@ -1,0 +1,17 @@
+{% extends 'cinema/base.html' %}
+{% block title %}Вакансии{% endblock %}
+{% block content %}
+<h2>Вакансии</h2>
+<ul class="list-group">
+    {% for vacancy in vacancies %}
+    <li class="list-group-item">
+        <h5>{{ vacancy.title }}</h5>
+        <p>{{ vacancy.description }}</p>
+        <p><strong>Требования:</strong> {{ vacancy.requirements }}</p>
+        <p><strong>Зарплата:</strong> {{ vacancy.salary }}</p>
+    </li>
+    {% empty %}
+    <li class="list-group-item">Нет открытых вакансий.</li>
+    {% endfor %}
+</ul>
+{% endblock %} 

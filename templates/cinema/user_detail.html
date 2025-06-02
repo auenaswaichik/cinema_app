@@ -1,0 +1,197 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Статистика пользователя - {{ user_detail.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Статистика пользователя: {{ user_detail.username }}</h2>
+            <a href="{% url 'cinema:admin_dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Назад к панели управления
+            </a>
+        </div>
+    </div>
+
+    <!-- Общая статистика пользователя -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Куплено билетов</h5>
+                    <p class="card-text display-4">{{ user_detail.ticket_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Потрачено</h5>
+                    <p class="card-text display-4">{{ user_detail.total_spent|default:"0" }} BYN</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Бронирований</h5>
+                    <p class="card-text display-4">{{ user_detail.booking_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Отзывов</h5>
+                    <p class="card-text display-4">{{ user_detail.review_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- История покупок -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">История покупок</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Фильм</th>
+                                    <th>Дата сеанса</th>
+                                    <th>Зал</th>
+                                    <th>Место</th>
+                                    <th>Цена</th>
+                                    <th>Дата покупки</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ticket in user_tickets %}
+                                <tr>
+                                    <td>{{ ticket.session.movie.title }}</td>
+                                    <td>{{ ticket.session.start_time|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ ticket.session.hall.name }}</td>
+                                    <td>{{ ticket.seat_number }}</td>
+                                    <td>{{ ticket.price }} BYN</td>
+                                    <td>{{ ticket.purchase_date|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        {% if ticket.is_used %}
+                                            <span class="badge bg-success">Использован</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Не использован</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Нет данных о покупках</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- История бронирований -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">История бронирований</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Фильм</th>
+                                    <th>Дата сеанса</th>
+                                    <th>Зал</th>
+                                    <th>Место</th>
+                                    <th>Цена</th>
+                                    <th>Дата бронирования</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in user_bookings %}
+                                <tr>
+                                    <td>{{ booking.session.movie.title }}</td>
+                                    <td>{{ booking.session.start_time|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ booking.session.hall.name }}</td>
+                                    <td>{{ booking.seat_number }}</td>
+                                    <td>{{ booking.price }} BYN</td>
+                                    <td>{{ booking.booking_date|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        {% if booking.is_active %}
+                                            {% if booking.is_expired %}
+                                                <span class="badge bg-danger">Истекло</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Активно</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Отменено</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Нет данных о бронированиях</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Отзывы пользователя -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Отзывы пользователя</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Фильм</th>
+                                    <th>Оценка</th>
+                                    <th>Текст отзыва</th>
+                                    <th>Дата</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for review in user_reviews %}
+                                <tr>
+                                    <td>{{ review.movie.title }}</td>
+                                    <td>{{ review.rating }}/10</td>
+                                    <td>{{ review.text }}</td>
+                                    <td>{{ review.created_at|date:"d.m.Y H:i" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">Нет данных об отзывах</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

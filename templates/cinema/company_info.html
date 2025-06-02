@@ -1,0 +1,11 @@
+{% extends 'cinema/base.html' %}
+{% block title %}О компании{% endblock %}
+{% block content %}
+<h2>О компании</h2>
+{% if company_info.logo %}
+<img src="{{ company_info.logo.url }}" class="img-fluid mb-3" alt="Логотип компании">
+{% endif %}
+<p>{{ company_info.content }}</p>
+<h4>Реквизиты</h4>
+<p>{{ company_info.requisites }}</p>
+{% endblock %} 

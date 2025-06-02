@@ -1,0 +1,16 @@
+{% extends 'cinema/base.html' %}
+{% block title %}Сеансы{% endblock %}
+{% block content %}
+<h2>Расписание сеансов</h2>
+<ul class="list-group">
+    {% for session in sessions %}
+    <li class="list-group-item">
+        <strong>{{ session.movie.title }}</strong> — {{ session.start_time|date:"d/m/Y H:i" }} в зале {{ session.hall.name }}<br>
+        Цена: {{ session.price }} руб.
+        <a href="{% url 'cinema:buy_ticket' session.id %}" class="btn btn-sm btn-success ms-2">Купить билет</a>
+    </li>
+    {% empty %}
+    <li class="list-group-item">Нет сеансов.</li>
+    {% endfor %}
+</ul>
+{% endblock %} 

@@ -1,0 +1,99 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}{{ movie.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Информация о фильме -->
+        <div class="col-md-4">
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" class="img-fluid rounded shadow-sm mb-3" alt="{{ movie.title }}">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h1 class="mb-3">{{ movie.title }}</h1>
+            <div class="mb-4">
+                <p><strong>Страна:</strong> {{ movie.country }}</p>
+                <p><strong>Длительность:</strong> {{ movie.duration }} мин.</p>
+                <p><strong>Дата выхода:</strong> {{ movie.release_date|date:"d.m.Y" }}</p>
+                <p><strong>Жанры:</strong> 
+                    {% for genre in movie.genres.all %}
+                        <span class="badge bg-secondary">{{ genre.name }}</span>
+                    {% endfor %}
+                </p>
+                <p><strong>Рейтинг:</strong> 
+                    <span class="badge bg-primary">{{ average_rating|floatformat:1 }}/10</span>
+                </p>
+            </div>
+            <div class="mb-4">
+                <h4>Описание</h4>
+                <p>{{ movie.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сеансы -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="mb-4">Ближайшие сеансы</h3>
+            {% if sessions %}
+                <div class="row">
+                    {% for session in sessions %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ session.start_time|date:"d.m.Y H:i" }}</h5>
+                                    <p class="card-text">
+                                        <strong>Зал:</strong> {{ session.hall.name }}<br>
+                                        <strong>Цена:</strong> {{ session.price }} BYN<br>
+                                        <strong>Доступно мест:</strong> {{ session.available_seats }}
+                                    </p>
+                                    <a href="{% url 'cinema:buy_ticket' session.id %}" class="btn btn-primary">
+                                        Купить билет
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    На данный момент нет доступных сеансов для этого фильма.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Отзывы -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="mb-4">Отзывы</h3>
+            {% if user.is_authenticated and not user.is_staff %}
+                <a href="{% url 'cinema:review_create' movie.id %}" class="btn btn-primary mb-4">
+                    Написать отзыв
+                </a>
+            {% endif %}
+            
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title mb-0">{{ review.user.username }}</h5>
+                                <span class="badge bg-primary">{{ review.rating }}/10</span>
+                            </div>
+                            <p class="card-text">{{ review.text }}</p>
+                            <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    Пока нет отзывов для этого фильма.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

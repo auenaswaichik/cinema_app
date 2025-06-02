@@ -1,0 +1,208 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Расширенная статистика{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Расширенная статистика</h2>
+            <p class="text-muted">Период: {{ start_date|date:"d.m.Y" }} - {{ end_date|date:"d.m.Y" }}</p>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="start_date" class="form-label">Начальная дата</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="end_date" class="form-label">Конечная дата</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="stat_type" class="form-label">Тип статистики</label>
+                            <select class="form-select" id="stat_type" name="stat_type">
+                                <option value="tickets" {% if stat_type == 'tickets' %}selected{% endif %}>Билеты</option>
+                                <option value="bookings" {% if stat_type == 'bookings' %}selected{% endif %}>Бронирования</option>
+                                <option value="users" {% if stat_type == 'users' %}selected{% endif %}>Пользователи</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Применить фильтры</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Общая статистика -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Продано билетов</h5>
+                    <p class="card-text display-4">{{ total_tickets }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Активных бронирований</h5>
+                    <p class="card-text display-4">{{ active_bookings }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Выручка</h5>
+                    <p class="card-text display-4">{{ total_revenue }} BYN</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Конверсия</h5>
+                    <p class="card-text display-4">{{ conversion_rate }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика по фильмам -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Статистика по фильмам</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Фильм</th>
+                                    <th>Продано билетов</th>
+                                    <th>Активных бронирований</th>
+                                    <th>Выручка</th>
+                                    <th>Средняя оценка</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for movie in movie_stats %}
+                                <tr>
+                                    <td>{{ movie.title }}</td>
+                                    <td>{{ movie.tickets_sold }}</td>
+                                    <td>{{ movie.active_bookings }}</td>
+                                    <td>{{ movie.revenue }} BYN</td>
+                                    <td>{{ movie.avg_rating|default:"Нет оценок" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика по сеансам -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Статистика по сеансам</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Фильм</th>
+                                    <th>Дата и время</th>
+                                    <th>Зал</th>
+                                    <th>Продано билетов</th>
+                                    <th>Активных бронирований</th>
+                                    <th>Доступно мест</th>
+                                    <th>Заполненность</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in session_stats %}
+                                <tr>
+                                    <td>{{ session.movie.title }}</td>
+                                    <td>{{ session.start_time|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ session.hall.name }}</td>
+                                    <td>{{ session.tickets_sold }}</td>
+                                    <td>{{ session.active_bookings }}</td>
+                                    <td>{{ session.remaining_seats }}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ session.occupancy_rate }}%"
+                                                 aria-valuenow="{{ session.occupancy_rate }}" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+                                                {{ session.occupancy_rate }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Активность пользователей -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Активность пользователей</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Пользователь</th>
+                                    <th>Последний вход</th>
+                                    <th>Куплено билетов</th>
+                                    <th>Активных бронирований</th>
+                                    <th>Потрачено</th>
+                                    <th>Отзывов</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in user_activity %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.last_login|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ user.tickets_bought }}</td>
+                                    <td>{{ user.active_bookings }}</td>
+                                    <td>{{ user.total_spent }} BYN</td>
+                                    <td>{{ user.reviews_count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

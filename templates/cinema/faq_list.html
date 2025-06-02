@@ -1,0 +1,16 @@
+{% extends 'cinema/base.html' %}
+{% block title %}FAQ{% endblock %}
+{% block content %}
+<h2>Часто задаваемые вопросы</h2>
+<ul class="list-group">
+    {% for faq in faqs %}
+    <li class="list-group-item">
+        <strong>{{ faq.question }}</strong><br>
+        <span>{{ faq.answer }}</span>
+        <div class="text-muted small">Добавлено: {{ faq.created_at|date:"d/m/Y" }}</div>
+    </li>
+    {% empty %}
+    <li class="list-group-item">Нет вопросов.</li>
+    {% endfor %}
+</ul>
+{% endblock %} 

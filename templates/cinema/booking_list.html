@@ -1,0 +1,79 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Мои бронирования{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Мои бронирования</h2>
+
+    {% if active_bookings %}
+        <div class="row">
+            {% for booking in active_bookings %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if booking.session.movie.poster %}
+                            <img src="{{ booking.session.movie.poster.url }}" class="card-img-top" alt="{{ booking.session.movie.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ booking.session.movie.title }}</h5>
+                            <p class="card-text">
+                                <strong>Дата и время:</strong> {{ booking.session.start_time|date:"d.m.Y H:i" }}<br>
+                                <strong>Зал:</strong> {{ booking.session.hall.name }}<br>
+                                <strong>Место:</strong> {{ booking.seat_number }}<br>
+                                <strong>Цена:</strong> {{ booking.price }} BYN<br>
+                                <strong>Действительно до:</strong> {{ booking.expiry_date|date:"d.m.Y H:i" }}<br>
+                                <strong>Осталось времени:</strong> 
+                                <span class="countdown" data-expiry="{{ booking.expiry_date|date:'c' }}">
+                                    {{ booking.expiry_date|timeuntil }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-grid gap-2">
+                                <form method="post" action="{% url 'cinema:cancel_booking' booking.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        Отменить бронирование
+                                    </button>
+                                </form>
+                                <a href="{% url 'cinema:buy_ticket' booking.session.id %}" class="btn btn-success w-100">
+                                    Купить билет
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            У вас пока нет активных бронирований.
+            <a href="{% url 'cinema:movie_list' %}" class="alert-link">Перейти к списку фильмов</a>
+        </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обновление оставшегося времени каждую секунду
+    setInterval(function() {
+        document.querySelectorAll('.countdown').forEach(function(element) {
+            const expiryDate = new Date(element.dataset.expiry);
+            const now = new Date();
+            const diff = expiryDate - now;
+            
+            if (diff <= 0) {
+                element.textContent = 'Время истекло';
+                element.closest('.card').classList.add('bg-light');
+            } else {
+                const minutes = Math.floor(diff / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                element.textContent = `${minutes} мин. ${seconds} сек.`;
+            }
+        });
+    }, 1000);
+});
+</script>
+{% endblock %}
+{% endblock %} 

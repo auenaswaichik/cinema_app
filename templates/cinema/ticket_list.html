@@ -1,0 +1,46 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Мои билеты{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Мои билеты</h2>
+
+    {% if tickets %}
+        <div class="row">
+            {% for ticket in tickets %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if ticket.session.movie.poster %}
+                            <img src="{{ ticket.session.movie.poster.url }}" class="card-img-top" alt="{{ ticket.session.movie.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ ticket.session.movie.title }}</h5>
+                            <p class="card-text">
+                                <strong>Дата и время:</strong> {{ ticket.session.start_time|date:"d.m.Y H:i" }}<br>
+                                <strong>Зал:</strong> {{ ticket.session.hall.name }}<br>
+                                <strong>Место:</strong> {{ ticket.seat_number }}<br>
+                                <strong>Цена:</strong> {{ ticket.price }} BYN<br>
+                                <strong>Статус:</strong> 
+                                {% if ticket.is_used %}
+                                    <span class="badge bg-secondary">Использован</span>
+                                {% else %}
+                                    <span class="badge bg-success">Активен</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            Куплен: {{ ticket.purchase_date|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            У вас пока нет купленных билетов.
+            <a href="{% url 'cinema:movie_list' %}" class="alert-link">Перейти к списку фильмов</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

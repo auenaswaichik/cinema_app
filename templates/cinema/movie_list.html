@@ -1,0 +1,21 @@
+{% extends 'cinema/base.html' %}
+{% block title %}Фильмы{% endblock %}
+{% block content %}
+<h2>Фильмы</h2>
+<div class="row">
+    {% for movie in movies %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.title }}</h5>
+                <p class="card-text">{{ movie.description|truncatewords:20 }}</p>
+                <a href="{% url 'cinema:movie_detail' movie.pk %}" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

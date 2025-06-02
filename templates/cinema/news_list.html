@@ -1,0 +1,17 @@
+{% extends 'cinema/base.html' %}
+{% block title %}Новости{% endblock %}
+{% block content %}
+<h2>Новости</h2>
+<ul class="list-group">
+    {% for news in news %}
+    <li class="list-group-item">
+        <h5>{{ news.title }}</h5>
+        <p class="text-muted">{{ news.created_at|date:"d/m/Y" }}</p>
+        <p>{{ news.content|truncatewords:30 }}</p>
+        <a href="{% url 'cinema:news_detail' news.pk %}" class="btn btn-link">Читать далее</a>
+    </li>
+    {% empty %}
+    <li class="list-group-item">Нет новостей.</li>
+    {% endfor %}
+</ul>
+{% endblock %} 

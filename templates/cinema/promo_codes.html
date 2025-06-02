@@ -1,0 +1,24 @@
+{% extends 'cinema/base.html' %}
+{% block title %}Промокоды и купоны{% endblock %}
+{% block content %}
+<h2>Действующие промокоды</h2>
+<ul class="list-group mb-4">
+    {% for promo in active_promos %}
+    <li class="list-group-item">
+        <strong>{{ promo.code }}</strong> — Скидка: {{ promo.discount }}% (до {{ promo.end_date|date:"d/m/Y" }})
+    </li>
+    {% empty %}
+    <li class="list-group-item">Нет активных промокодов.</li>
+    {% endfor %}
+</ul>
+<h2>Архивные промокоды</h2>
+<ul class="list-group">
+    {% for promo in expired_promos %}
+    <li class="list-group-item">
+        <strong>{{ promo.code }}</strong> — Скидка: {{ promo.discount }}% (до {{ promo.end_date|date:"d/m/Y" }})
+    </li>
+    {% empty %}
+    <li class="list-group-item">Нет архивных промокодов.</li>
+    {% endfor %}
+</ul>
+{% endblock %} 

@@ -1,0 +1,157 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Панель администратора{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Панель администратора</h2>
+            <div class="btn-group">
+                <a href="{% url 'cinema:admin_statistics' %}" class="btn btn-primary">
+                    <i class="fas fa-chart-line"></i> Расширенная статистика
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Общая статистика -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Всего пользователей</h5>
+                    <p class="card-text display-4">{{ total_users }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Всего фильмов</h5>
+                    <p class="card-text display-4">{{ total_movies }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Всего билетов</h5>
+                    <p class="card-text display-4">{{ total_tickets }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Общая выручка</h5>
+                    <p class="card-text display-4">{{ total_revenue }} BYN</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Топ фильмов -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Топ фильмов</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Фильм</th>
+                                    <th>Продано билетов</th>
+                                    <th>Выручка</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for movie in top_movies %}
+                                <tr>
+                                    <td>{{ movie.title }}</td>
+                                    <td>{{ movie.ticket_count }}</td>
+                                    <td>{{ movie.revenue }} BYN</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Предстоящие сеансы -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Предстоящие сеансы</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Фильм</th>
+                                    <th>Дата и время</th>
+                                    <th>Зал</th>
+                                    <th>Доступно мест</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in upcoming_sessions %}
+                                <tr>
+                                    <td>{{ session.movie.title }}</td>
+                                    <td>{{ session.start_time|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ session.hall.name }}</td>
+                                    <td>{{ session.available_seats }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика по залам -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Статистика по залам</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Зал</th>
+                                    <th>Количество сеансов</th>
+                                    <th>Продано билетов</th>
+                                    <th>Выручка</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hall in hall_stats %}
+                                <tr>
+                                    <td>{{ hall.hall__name }}</td>
+                                    <td>{{ hall.session_count }}</td>
+                                    <td>{{ hall.ticket_count }}</td>
+                                    <td>{{ hall.revenue }} BYN</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
